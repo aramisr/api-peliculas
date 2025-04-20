@@ -58,8 +58,8 @@ namespace WebApiPeliculas.Controllers
             return Ok(new { message = "Género creado correctamente" });
         }
 
-        [HttpPut]
-        public async Task<ActionResult> Put(int id, [FromBody] GeneroCreacionDTO generoCreacionDTO)
+        [HttpPut("EditarGenero")]
+        public async Task<ActionResult> EditarGenero(int id, [FromBody] GeneroCreacionDTO generoCreacionDTO)
         {
             var genero = await dbContext.Generos.FirstOrDefaultAsync(x => x.Id == id);
 
