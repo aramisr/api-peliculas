@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using WebApiPeliculas.Entidades;
+using WebApiPeliculas.Entities;
 
 namespace WebApiPeliculas
 {
@@ -10,5 +11,6 @@ namespace WebApiPeliculas
         {
         }
         public DbSet<Genero> Generos { get; set; }
+        public DbSet<Actor> Actores { get; set; }
     }
 }

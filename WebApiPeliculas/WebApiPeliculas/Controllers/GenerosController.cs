@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApiPeliculas.DTOs;
 using AutoMapper;
 using WebApiPeliculas.Utilidades;
+using Microsoft.Extensions.FileProviders;
 
 namespace WebApiPeliculas.Controllers
 {
@@ -19,63 +20,71 @@ namespace WebApiPeliculas.Controllers
     public class GenerosController : ControllerBase
     {
         private readonly ILogger<GenerosController> logger;
-        private readonly ApplicationDbContext dbContext;
-        private readonly IMapper mapper;
+        private readonly ApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
         public GenerosController(ILogger<GenerosController> logger, ApplicationDbContext dbContext, IMapper mapper)
         {
             this.logger = logger;
-            this.dbContext = dbContext;
-            this.mapper = mapper;
+            this._dbContext = dbContext;
+            this._mapper = mapper;
         }
 
         [HttpGet("GetGeneros")]
-        public async Task<ActionResult<List<GeneroDTO>>> Get([FromQuery] PaginacionDTO paginacionDTO)
+        public async Task<ActionResult<List<GeneroDTO>>> GetGeneros([FromQuery] PaginacionDTO paginacionDTO)
         {
-            var queryable = dbContext.Generos.AsQueryable();
+            var queryable = _dbContext.Generos.AsQueryable();
             await HttpContext.InsertarParametrosPaginacionEnCabecera(queryable);
             var generos = await queryable.OrderBy(x => x.Nombre).Paginar(paginacionDTO).ToListAsync();
-            return mapper.Map<List<GeneroDTO>>(generos);
+            return _mapper.Map<List<GeneroDTO>>(generos);
         }
 
         [HttpGet("GetById/{Id:int}")]
         public async Task<ActionResult<GeneroDTO>> GetById(int Id)
         {
-            var genero = await dbContext.Generos.FirstOrDefaultAsync(x => x.Id == Id);
+            var genero = await _dbContext.Generos.FirstOrDefaultAsync(x => x.Id == Id);
             
             if(genero == null)
             {
                 return NotFound();
             }
-            return mapper.Map<GeneroDTO>(genero);
+            return _mapper.Map<GeneroDTO>(genero);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] GeneroCreacionDTO generoCreacionDTO)
+        [HttpPost("AddGenero")]
+        public async Task<ActionResult> AddGenero([FromBody] GeneroCreacionDTO generoCreacionDTO)
         {
-            var genero = mapper.Map<Genero>(generoCreacionDTO);
-            dbContext.Add(genero);
-            await dbContext.SaveChangesAsync();
+            var genero = _mapper.Map<Genero>(generoCreacionDTO);
+            _dbContext.Add(genero);
+            await _dbContext.SaveChangesAsync();
             return Ok(new { message = "Género creado correctamente" });
         }
 
-        [HttpPut("EditarGenero")]
-        public async Task<ActionResult> EditarGenero(int id, [FromBody] GeneroCreacionDTO generoCreacionDTO)
+        [HttpPut("UpdateGenero")]
+        public async Task<ActionResult> UpdateGenero(int id, [FromBody] GeneroCreacionDTO generoCreacionDTO)
         {
-            var genero = await dbContext.Generos.FirstOrDefaultAsync(x => x.Id == id);
+            var genero = await _dbContext.Generos.FirstOrDefaultAsync(x => x.Id == id);
 
             if (genero == null)
             {
                 return NotFound();
             }
-            genero = mapper.Map(generoCreacionDTO, genero);
-            await dbContext.SaveChangesAsync();
+            genero = _mapper.Map(generoCreacionDTO, genero);
+            await _dbContext.SaveChangesAsync();
             return NoContent();
-
         }
-        [HttpDelete]
-        public async Task<ActionResult> Delete()
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            throw new NotImplementedException();
+            var existe = await _dbContext.Generos.AnyAsync(x => x.Id == id);
+
+            if(!existe){
+                return NotFound();
+            }
+
+            _dbContext.Remove(new Genero() { Id = id });
+            await _dbContext.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using WebApiPeliculas.DTOs;
 using WebApiPeliculas.Entidades;
+using WebApiPeliculas.Entities;
 
 namespace WebApiPeliculas.Utilidades
 {
@@ -9,7 +10,10 @@ namespace WebApiPeliculas.Utilidades
         public AutoMapperProfiles() 
         {
             CreateMap<Genero, GeneroDTO>().ReverseMap();
-            CreateMap<Genero, GeneroCreacionDTO>().ReverseMap();
+            CreateMap<GeneroCreacionDTO, Genero>();
+            CreateMap<Actor, ActorDTO>().ReverseMap();
+            CreateMap<ActorCreacionDTO, Actor>()
+                .ForMember(x => x.Foto, options => options.Ignore());
         }
     }
 }

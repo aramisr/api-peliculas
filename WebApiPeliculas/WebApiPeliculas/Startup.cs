@@ -6,6 +6,7 @@ using WebApiPeliculas.Behaviors;
 using WebApiPeliculas.Filtros;
 using WebApiPeliculas.Interfaces;
 using WebApiPeliculas.Repository;
+using WebApiPeliculas.Utilidades;
 
 namespace WebApiPeliculas
 {
@@ -20,6 +21,12 @@ namespace WebApiPeliculas
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
+
+           //services.AddTransient<IAlmacenadorAzureStorage, AlmacenadorAzureStorage>();
+
+            services.AddTransient<IAlmacenadorLocal, AlmacenadorLocal>();
+
+            services.AddHttpContextAccessor();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")
@@ -59,6 +66,8 @@ namespace WebApiPeliculas
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
 
