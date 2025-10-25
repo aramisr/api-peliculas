@@ -38,10 +38,10 @@ namespace WebApiPeliculas.Controllers
             return _mapper.Map<List<GeneroDTO>>(generos);
         }
 
-        [HttpGet("GetById/{Id:int}")]
-        public async Task<ActionResult<GeneroDTO>> GetById(int Id)
+        [HttpGet("GetById/{id:int}")]
+        public async Task<ActionResult<GeneroDTO>> GetById(int id)
         {
-            var genero = await _dbContext.Generos.FirstOrDefaultAsync(x => x.Id == Id);
+            var genero = await _dbContext.Generos.FirstOrDefaultAsync(x => x.Id == id);
             
             if(genero == null)
             {
@@ -59,7 +59,7 @@ namespace WebApiPeliculas.Controllers
             return Ok(new { message = "Género creado correctamente" });
         }
 
-        [HttpPut("UpdateGenero")]
+        [HttpPut("UpdateGenero/{id:int}")]
         public async Task<ActionResult> UpdateGenero(int id, [FromBody] GeneroCreacionDTO generoCreacionDTO)
         {
             var genero = await _dbContext.Generos.FirstOrDefaultAsync(x => x.Id == id);
@@ -73,8 +73,8 @@ namespace WebApiPeliculas.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
-        public async Task<ActionResult> Delete(int id)
+        [HttpDelete("DeleteGenero/{id:int}")]
+        public async Task<ActionResult> DeleteGenero(int id)
         {
             var existe = await _dbContext.Generos.AnyAsync(x => x.Id == id);
 
