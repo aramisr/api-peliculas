@@ -12,7 +12,7 @@ namespace WebApiPeliculas.Utilidades
             this._httpContextAccessor = httpContextAccessor;
         }
 
-        public Task BorrarArchivo(string ruta, string contenedor)
+        public Task BorrarArchivo(string contenedor, string ruta)
         {
             if (string.IsNullOrEmpty(ruta))
             {
@@ -31,7 +31,7 @@ namespace WebApiPeliculas.Utilidades
 
         public async Task<string> EditarArchivo(string contenedor, string ruta, IFormFile archivo)
         {
-            await BorrarArchivo(ruta, contenedor);
+            await BorrarArchivo(contenedor, ruta);
             return await GuardarArchivo(contenedor, archivo);
         }
 

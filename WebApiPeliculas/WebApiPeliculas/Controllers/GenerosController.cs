@@ -51,7 +51,7 @@ namespace WebApiPeliculas.Controllers
         }
 
         [HttpPost("AddGenero")]
-        public async Task<ActionResult> AddGenero([FromBody] GeneroCreacionDTO generoCreacionDTO)
+        public async Task<ActionResult> AddGenero([FromForm] GeneroCreacionDTO generoCreacionDTO)
         {
             var genero = _mapper.Map<Genero>(generoCreacionDTO);
             _dbContext.Add(genero);
@@ -60,7 +60,7 @@ namespace WebApiPeliculas.Controllers
         }
 
         [HttpPut("UpdateGenero/{id:int}")]
-        public async Task<ActionResult> UpdateGenero(int id, [FromBody] GeneroCreacionDTO generoCreacionDTO)
+        public async Task<ActionResult> UpdateGenero(int id, [FromForm] GeneroCreacionDTO generoCreacionDTO)
         {
             var genero = await _dbContext.Generos.FirstOrDefaultAsync(x => x.Id == id);
 
