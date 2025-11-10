@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using WebApiPeliculas.Entidades;
 using WebApiPeliculas.Entities;
 
 namespace WebApiPeliculas

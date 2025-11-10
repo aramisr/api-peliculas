@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using WebApiPeliculas.Validations;
 
-namespace WebApiPeliculas.Entidades
+namespace WebApiPeliculas.Entities
 {
     public class Genero
     {

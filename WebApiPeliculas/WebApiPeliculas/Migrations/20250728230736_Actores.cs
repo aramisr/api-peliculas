@@ -37,7 +37,6 @@ namespace WebApiPeliculas.Migrations
                     table.PrimaryKey("PK_Actores", x => x.Id);
                 });
         }
-
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {

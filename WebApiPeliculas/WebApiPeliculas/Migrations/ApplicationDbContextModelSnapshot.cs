@@ -15,7 +15,7 @@ namespace WebApiPeliculas.Migrations
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
-#pragma warning disable 612, 618
+            #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
@@ -68,7 +68,7 @@ namespace WebApiPeliculas.Migrations
 
                     b.ToTable("Actores");
                 });
-#pragma warning restore 612, 618
+            #pragma warning restore 612, 618
         }
     }
 }

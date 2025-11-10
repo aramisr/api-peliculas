@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using WebApiPeliculas.DTOs;
-using WebApiPeliculas.Entidades;
 using WebApiPeliculas.Entities;
 
 namespace WebApiPeliculas.Utilidades

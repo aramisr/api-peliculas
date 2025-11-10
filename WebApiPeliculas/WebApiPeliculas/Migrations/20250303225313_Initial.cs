@@ -23,7 +23,6 @@ namespace WebApiPeliculas.Migrations
                     table.PrimaryKey("PK_Generos", x => x.Id);
                 });
         }
-
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {

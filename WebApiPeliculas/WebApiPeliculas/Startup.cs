@@ -43,6 +43,7 @@ namespace WebApiPeliculas
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
             services.AddResponseCaching();
             services.AddTransient<IGenerosRepository, GenerosRepository>();
+            services.AddTransient<IActoresRepository, ActoresRepository>();
             services.AddTransient<MiFiltroDeAccion>();
             services.AddControllers(options =>
             {
