@@ -15,10 +15,7 @@ namespace WebApiPeliculas.Controllers
         private readonly IMapper _mapper;
         private readonly IGenerosRepository _generosRepository;
 
-        public GenerosController(
-            ILogger<GenerosController> logger,
-            IMapper mapper,
-            IGenerosRepository generosRepository)
+        public GenerosController(ILogger<GenerosController> logger, IMapper mapper, IGenerosRepository generosRepository)
         {
             _logger = logger;
             _mapper = mapper;

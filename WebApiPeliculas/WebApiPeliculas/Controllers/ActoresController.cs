@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiPeliculas.DTOs;
 using WebApiPeliculas.Entities;
+using WebApiPeliculas.Interfaces;
 using WebApiPeliculas.Utilidades;
 
 namespace WebApiPeliculas.Controllers
@@ -11,38 +12,35 @@ namespace WebApiPeliculas.Controllers
     [ApiController]
     public class ActoresController : ControllerBase
     {
-        private readonly ILogger<GenerosController> _logger;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ILogger<ActoresController> _logger;
         private readonly IMapper _mapper;
         private readonly IAlmacenadorLocal _almacenadorArchivos;
+        private readonly IActoresRepository _actoresRepository;
         public readonly string contenedor = "actores";
 
-        public ActoresController(ILogger<GenerosController> logger, ApplicationDbContext dbContext, IMapper mapper, IAlmacenadorLocal almacenadorArchivos)
+        public ActoresController(ILogger<ActoresController> logger, IMapper mapper, IAlmacenadorLocal almacenadorArchivos, IActoresRepository actoresRepository)
         {
-            this._logger = logger;
-            this._dbContext = dbContext;
-            this._mapper = mapper;
-            this._almacenadorArchivos = almacenadorArchivos;
+            _logger = logger;
+            _mapper = mapper;
+            _almacenadorArchivos = almacenadorArchivos;
+            _actoresRepository = actoresRepository;
         }
 
         [HttpGet("GetActores")]
         public async Task<ActionResult<List<ActorDTO>>> GetActores([FromQuery] PaginacionDTO paginacionDTO)
         {
-            var queryable = _dbContext.Actores.AsQueryable();
-            await HttpContext.InsertarParametrosPaginacionEnCabecera(queryable);
-            var actores = await queryable.OrderBy(x => x.Nombre).Paginar(paginacionDTO).ToListAsync();
+            var actores = await _actoresRepository.GetActoresAsync(paginacionDTO, HttpContext);
             return _mapper.Map<List<ActorDTO>>(actores);
         }
 
         [HttpGet("GetById/{id:int}")]
         public async Task<ActionResult<ActorDTO>> GetById(int id)
         {
-            var actor = await _dbContext.Actores.FirstOrDefaultAsync(x => x.Id == id);
+            var actor = await _actoresRepository.GetByIdAsync(id);
 
             if (actor == null)
-            {
                 return NotFound();
-            }
+
             return _mapper.Map<ActorDTO>(actor);
         }
 
@@ -51,48 +49,46 @@ namespace WebApiPeliculas.Controllers
         {
             var actor = _mapper.Map<Actor>(actorCreacionDTO);
 
-            if(actorCreacionDTO.Foto != null)
+            if (actorCreacionDTO.Foto != null)
             {
                 actor.Foto = await _almacenadorArchivos.GuardarArchivo(contenedor, actorCreacionDTO.Foto);
             }
 
-            _dbContext.Add(actor);
-            await _dbContext.SaveChangesAsync();
-            return NoContent();
+            await _actoresRepository.AddActorAsync(actor);
+            return Ok(new { message = "Actor creado correctamente" });
         }
 
         [HttpPut("UpdateActor/{id:int}")]
         public async Task<ActionResult> UpdateActor(int id, [FromForm] ActorCreacionDTO actorCreacionDTO)
         {
-            var actor = await _dbContext.Actores.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (actor == null)
-            {
+            var actorExistente = await _actoresRepository.GetByIdAsync(id);
+            if (actorExistente == null)
                 return NotFound();
-            }
-            actor = _mapper.Map(actorCreacionDTO, actor);
+
+            _mapper.Map(actorCreacionDTO, actorExistente);
 
             if (actorCreacionDTO.Foto != null)
             {
-                actor.Foto = await _almacenadorArchivos.EditarArchivo(contenedor, actor.Foto, actorCreacionDTO.Foto);
+                actorExistente.Foto = await _almacenadorArchivos.EditarArchivo(contenedor, actorExistente.Foto, actorCreacionDTO.Foto);
             }
 
-            await _dbContext.SaveChangesAsync();
+            await _actoresRepository.UpdateActorAsync(id, actorExistente);
             return NoContent();
         }
 
         [HttpDelete("DeleteActor/{id:int}")]
         public async Task<ActionResult> DeleteActor(int id)
         {
-            var existe = await _dbContext.Actores.AnyAsync(x => x.Id == id);
-
-            if (!existe)
-            {
+            var actor = await _actoresRepository.GetByIdAsync(id);
+            if (actor == null)
                 return NotFound();
+
+            if (!string.IsNullOrEmpty(actor.Foto))
+            {
+                await _almacenadorArchivos.BorrarArchivo(contenedor, actor.Foto);
             }
 
-            _dbContext.Remove(new Actor() { Id = id });
-            await _dbContext.SaveChangesAsync();
+            await _actoresRepository.DeleteActorAsync(id);
             return NoContent();
         }
     }
