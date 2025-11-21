@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using NetTopologySuite;
@@ -23,6 +24,14 @@ namespace WebApiPeliculas
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddSingleton(provider =>
+                new MapperConfiguration(config =>
+                {
+                    var geometryFactory = provider.GetRequiredService<GeometryFactory>();
+                    config.AddProfile(new AutoMapperProfiles(geometryFactory));
+                }).CreateMapper());
+            
 
            //services.AddTransient<IAlmacenadorAzureStorage, AlmacenadorAzureStorage>();
 
@@ -50,6 +59,7 @@ namespace WebApiPeliculas
             services.AddResponseCaching();
             services.AddTransient<IGenerosRepository, GenerosRepository>();
             services.AddTransient<IActoresRepository, ActoresRepository>();
+            services.AddTransient<ICinesRepository, CinesRepository>();
             services.AddTransient<MiFiltroDeAccion>();
             services.AddControllers(options =>
             {

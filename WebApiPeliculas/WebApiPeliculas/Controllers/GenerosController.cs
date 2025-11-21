@@ -3,7 +3,6 @@ using WebApiPeliculas.Entities;
 using WebApiPeliculas.Interfaces;
 using WebApiPeliculas.DTOs;
 using AutoMapper;
-using WebApiPeliculas.Utilidades;
 
 namespace WebApiPeliculas.Controllers
 {

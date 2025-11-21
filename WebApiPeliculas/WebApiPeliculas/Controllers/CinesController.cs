@@ -1,27 +1,25 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApiPeliculas.DTOs;
 using WebApiPeliculas.Entities;
 using WebApiPeliculas.Interfaces;
-using WebApiPeliculas.Migrations;
 using WebApiPeliculas.Utilidades;
 
 namespace WebApiPeliculas.Controllers
 {
+    [Route("api/cines")]
+    [ApiController]
     public class CinesController : ControllerBase
     {
         private readonly ILogger<CinesController> _logger;
         private readonly IMapper _mapper;
-        private readonly IAlmacenadorLocal _almacenadorArchivos;
         private readonly ICinesRepository _cinesRepository;
         public readonly string contenedor = "cines";
 
-        public CinesController(ILogger<CinesController> logger, IMapper mapper, IAlmacenadorLocal almacenadorArchivos, ICinesRepository cinesRepository)
+        public CinesController(ILogger<CinesController> logger, IMapper mapper, ICinesRepository cinesRepository)
         {
             _logger = logger;
             _mapper = mapper;
-            _almacenadorArchivos = almacenadorArchivos;
             _cinesRepository = cinesRepository;
         }
 
@@ -48,11 +46,6 @@ namespace WebApiPeliculas.Controllers
         {
             var cine = _mapper.Map<Cine>(cineCreacionDTO);
 
-            if (cineCreacionDTO.Foto != null)
-            {
-                cine.Foto = await _almacenadorArchivos.GuardarArchivo(contenedor, cineCreacionDTO.Foto);
-            }
-
             await _cinesRepository.AddCineAsync(cine);
             return Ok(new { message = "Cine creado correctamente" });
         }
@@ -66,11 +59,6 @@ namespace WebApiPeliculas.Controllers
 
             _mapper.Map(cineCreacionDTO, cineExistente);
 
-            if (cineCreacionDTO.Foto != null)
-            {
-                cineExistente.Foto = await _almacenadorArchivos.EditarArchivo(contenedor, cineExistente.Foto, cineCreacionDTO.Foto);
-            }
-
             await _cinesRepository.UpdateCineAsync(id, cineExistente);
             return NoContent();
         }
@@ -81,11 +69,6 @@ namespace WebApiPeliculas.Controllers
             var cine = await _cinesRepository.GetByIdAsync(id);
             if (cine == null)
                 return NotFound();
-
-            if (!string.IsNullOrEmpty(cine.Foto))
-            {
-                await _almacenadorArchivos.BorrarArchivo(contenedor, cine.Foto);
-            }
 
             await _cinesRepository.DeleteCineAsync(id);
             return NoContent();

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApiPeliculas.DTOs;
 using WebApiPeliculas.Entities;
 using WebApiPeliculas.Interfaces;
